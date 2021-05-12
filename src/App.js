@@ -4,14 +4,12 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { db } from "./firebase";
 import Message from "./Message";
+import firebase from 'firebase'; 
+import FlipMove from 'react-flip-move';
 
 function App() {
   const [input, setInput] = useState("");
-  const [messages, setMessage] = useState([
-    {username:'kalasu',message:'hlooo'},
-    {username:'jayasu',message:'hi kutta'},
-
-  ]);
+  const [messages, setMessage] = useState([]);
   const [userName,setUserName] = useState('');
 
 
@@ -19,10 +17,10 @@ function App() {
 
   useEffect(()=>
   {
-    db.collection('messages').onSnapshot(snapshot =>
+    db.collection('messages').orderBy('timestamp','desc').onSnapshot(snapshot =>
       {
-        setMessage(snapshot.docs.map(doc => doc.data()))
-      })
+        setMessage(snapshot.docs.map(doc => ({id:doc.id, message: doc.data()})))
+      });
   },[])
 
 
@@ -33,11 +31,18 @@ function App() {
   
   const sendMessage = (e) => {
     e.preventDefault();
-    setMessage([...messages, {username:userName,message:input}]);
+    //adding to firebase
+    db.collection('messages').add({
+      message: input,
+      username: userName,
+      timestamp: firebase.firestore.FieldValue.serverTimestamp()//exact time when th message sent-local time of each person
+    })
+
     setInput("");
   };
   return (
     <div className="App">
+      <img src="https://facebookbrand.com/wp-content/uploads/2020/10/Logo_Messenger_NewBlurple-399x399-1.png?w=399&h=399" alt="" height='100px'/>
       <h1>facebook messenger clone</h1>
       <h4>Welcome {userName}</h4>
       <form>
@@ -62,11 +67,15 @@ function App() {
       </form>
 
       {/* Display the messages */}
+
+      <FlipMove>
       {
-      messages.map((message) => {
-        return <Message userName={userName} message={message} />
+      messages.map(({id,message}) => {
+        return <Message key={id} userName={userName} message={message} />
       })
       }
+      </FlipMove>
+      
     </div>
   );
 }
