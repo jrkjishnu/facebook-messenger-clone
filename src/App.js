@@ -6,6 +6,10 @@ import { db } from "./firebase";
 import Message from "./Message";
 import firebase from 'firebase'; 
 import FlipMove from 'react-flip-move';
+import SendIcon from '@material-ui/icons/Send';
+import { IconButton } from '@material-ui/core';
+
+
 
 function App() {
   const [input, setInput] = useState("");
@@ -45,24 +49,26 @@ function App() {
       <img src="https://facebookbrand.com/wp-content/uploads/2020/10/Logo_Messenger_NewBlurple-399x399-1.png?w=399&h=399" alt="" height='100px'/>
       <h1>facebook messenger clone</h1>
       <h4>Welcome {userName}</h4>
-      <form>
-        <FormControl>
-          <InputLabel>Enter the Message...</InputLabel>
+      <form className="app__form">
+        <FormControl className="app__formControl">
           <Input
+          className="app__input"
+          placeholder="Enter the Message..."
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             aria-describedby="my-helper-text"
           />
-          <Button
+          <IconButton
+            className="app__iconbutton"
             disabled={!input}
             variant="contained"
             color="secondary"
             type="submit"
             onClick={sendMessage}
           >
-            Send Message
-          </Button>
+            <SendIcon></SendIcon>
+          </IconButton>
         </FormControl>
       </form>
 
